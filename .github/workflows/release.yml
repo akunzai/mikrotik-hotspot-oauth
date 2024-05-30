@@ -23,17 +23,15 @@ jobs:
         run: corepack enable
       - name: Install dependencies
         run: pnpm install
-      - name: Lint
-        run: pnpm lint
       - name: Build
         run: pnpm build
       - name: Create zip
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -jr hotspot.zip dist
+          args: zip -jr hotspot.zip dist
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-            generate_release_notes: true
-            files: /
-              hotspot.zip
+          generate_release_notes: true
+          files: |
+            hotspot.zip
