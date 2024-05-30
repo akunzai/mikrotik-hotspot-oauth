@@ -18,14 +18,13 @@ var chapChallenge = '$(chap-challenge)';
 var error = '';
 var trial = '$(trial)';
 
-// eslint-disable-next-line no-unused-vars
 function doLogin(username, password) {
   document.sendin.action = loginOnly;
   document.sendin.username.value = username;
   document.sendin.dst.value = linkOrig;
   var psw = password;
   if (chapId) {
-    psw = hexMD5(chapId + password + chapChallenge);
+    psw = md5(chapId + password + chapChallenge);
   }
   document.sendin.password.value = psw;
   document.sendin.submit();
