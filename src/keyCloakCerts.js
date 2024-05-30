@@ -76,7 +76,7 @@ function toLongHex(number) {
   return toHex(lengthByteLength) + str;
 }
 
-function encodeLenght(n) {
+function encodeLength(n) {
   return n <= 127
     ? toHex(n)
     : toLongHex(n);
@@ -85,23 +85,21 @@ function encodeLenght(n) {
 function getPublicKey(modulus, exponent) {
   const mod = convertToHex(modulus);
   const exp = convertToHex(exponent);
-  const encModLen = encodeLenght(mod.length / 2);
-  const encExpLen = encodeLenght(exp.length / 2);
+  const encModLen = encodeLength(mod.length / 2);
+  const encExpLen = encodeLength(exp.length / 2);
   const part = [mod, exp, encModLen, encExpLen].map(n => n.length / 2).reduce((a, b) => a + b);
-  const bufferSource = `30${encodeLenght(part + 2)}02${encModLen}${mod}02${encExpLen}${exp}`;
+  const bufferSource = `30${encodeLength(part + 2)}02${encModLen}${mod}02${encExpLen}${exp}`;
   const pubkey = Buffer.from(bufferSource, 'hex').toString('base64');
   return BEGIN_KEY + pubkey.match(/.{1,64}/g).join('\n') + END_KEY;
 }
-async function fetch(url, kid) {
-  const key = await getKeyFromKeycloak(url, kid);
 
+async function fetchPublicKey(url, kid) {
+  const key = await getKeyFromKeycloak(url, kid);
   verify(key);
   return getPublicKey(key.n, key.e);
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export async function KeycloakPublicKeyFetcher(url, realm, kid) {
+export async function fetchKeycloakPublicKey(url, realm, kid) {
   const certsUrl = realm ? `${url}/realms/${realm}/protocol/openid-connect/certs` : url;
-  // eslint-disable-next-line no-return-await
-  return await fetch(certsUrl, kid);
+  return await fetchPublicKey(certsUrl, kid);
 }

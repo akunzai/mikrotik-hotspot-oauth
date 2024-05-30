@@ -1,8 +1,7 @@
 import Keycloak from 'keycloak-js';
 import {
   getPassword, getUserName, loadKeycloakJson, verifyToken,
-} from './base/loginUtils';
-
+} from './loginUtils';
 
 function setError(message) {
   const errorElement = document.getElementById('error');

@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { KeycloakPublicKeyFetcher } from './keyCloakCerts';
+import { decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
+import { fetchKeycloakPublicKey } from './keyCloakCerts';
 import { fetchData } from './restCalls';
 
 function getRealmName(url) {
@@ -7,27 +7,25 @@ function getRealmName(url) {
   return url.substring(n + 1);
 }
 
-function getRealmNameFromToken(payloadjwt) {
-  return getRealmName(payloadjwt.iss);
+function getRealmNameFromToken(claims) {
+  return getRealmName(claims.iss);
 }
 
 export async function verifyToken(token, keycloakJSON) {
-  const decodedJwt = jwt.decode(token, { complete: true });
-  if (!decodedJwt || !decodedJwt.header) {
+  const protectedHeader = decodeProtectedHeader(token);
+  if (!protectedHeader) {
     throw new Error('invalid token (header part)');
   } else {
-    const { kid } = decodedJwt.header;
-    const { alg } = decodedJwt.header;
-    const realm = getRealmNameFromToken(decodedJwt.payload);
+    const { kid, alg } = protectedHeader;
+    const claims = decodeJwt(token);
+    const realm = getRealmNameFromToken(claims);
     if (alg.toLowerCase() !== 'none' && !alg.toLowerCase().startsWith('hs') && kid) {
       // fetch the PEM Public Key
-
       try {
-        const publicKeyFunc = KeycloakPublicKeyFetcher(keycloakJSON['auth-server-url'],
+        const publicKey = await fetchKeycloakPublicKey(keycloakJSON['auth-server-url'],
           realm,
           kid);
-        const key = await publicKeyFunc;
-        return jwt.verify(token, key);
+        return jwtVerify(token, publicKey);
       } catch (e) {
         // Token is not valid
         throw new Error(`invalid token: ${e}`);
@@ -52,7 +50,6 @@ export function loadKeycloakJson() {
       resolve(JSON.parse(r.data));
     }).catch((e) => {
       if (e.response && e.response.status === 404) {
-        // eslint-disable-next-line prefer-promise-reject-errors
         reject('Cannot found /keycloak.json');
       } else {
         reject(e.response ? e.response.data : e);
