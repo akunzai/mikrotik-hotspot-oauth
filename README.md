@@ -21,7 +21,7 @@ corepack enable
 # install npm packages
 pnpm install
 
-# watch and serve a dev server at http://localhost:8081/
+# watch and serve a dev server at http://localhost:5173/login.html
 # put your keycloak.json in ./public/
 pnpm start
 
