@@ -1,5 +1,3 @@
-import md5 from 'blueimp-md5';
-window.md5 = md5;
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import Keycloak from 'keycloak-js';
 
@@ -13,9 +11,11 @@ async function verifyToken(keycloak) {
   }
 }
 
-function setError(message) {
-  const errorElement = document.getElementById('error');
-  errorElement.innerHTML = `<br /><div style="color: #FF8080; font-size: 9px">${message}</div>`;
+function updateInfo(message, hasError) {
+  hasError = hasError ?? false;
+  const infoElement = document.querySelector('p.info');
+  infoElement.classList.toggle('alert', hasError)
+  infoElement.innerText = message;
 }
 
 async function main() {
@@ -24,26 +24,34 @@ async function main() {
     onLoad: 'login-required'
   });
   if (!authenticated) {
-    setError('failed to initialize SSO, please check configuration');
+    updateInfo('failed to initialize SSO, please check configuration', true);
     return;
   }
   const claims = await verifyToken(keycloak);
   const username = claims[claims.n];
   const password = claims[claims.np || 's'];
   if (!username || !password) {
-    setError(`Client ${keycloak.clientId} is not configured. Please check client mapper.`);
+    updateInfo(`Client ${keycloak.clientId} is not configured. Please check client mapper.`, true);
     return;
   }
-  const rootElement = document.getElementById('root');
-  rootElement.innerHTML = 'Please wait...';
+  updateInfo('Please wait...');
   doLogin(username, password);
 }
 
 if (error) {
-  setError(`${error}`);
+  updateInfo(error, true);
 } else {
   main()
-    .catch((error) => {
-      setError(`failed to initialize SSO, please check configuration: ${error}`);
+    .catch((reason) => {
+      if (typeof reason === 'object') {
+        if (typeof reason['error'] === 'string') {
+          reason = reason['error']
+        } else if (typeof reason['message'] === 'string') {
+          reason = reason['message']
+        } else {
+          reason = JSON.stringify(reason);
+        }
+      }
+      updateInfo(`failed to initialize SSO: ${reason}`, true);
     });
 }
