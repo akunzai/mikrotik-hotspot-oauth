@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@9.1.4",
+  "packageManager": "pnpm@9.2.0",
   "description": "hotspot login page to work with keycloak",
   "main": "src/index.js",
   "scripts": {
