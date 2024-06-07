@@ -59,7 +59,7 @@ pnpm build
 
 ### Setup Mikrotik
 
-1. Download the `hostpot.zip` from the latest [release](https://github.com/akunzai/mikrotik-hotspot-oauth/releases), and unzip up `/hotspot` folder on device via
+1. Download the `hostpot.zip` from the latest [release](https://github.com/akunzai/mikrotik-hotspot-oauth/releases), unzip and upload the `login.html` file and `assets` folder into `/hotspot` folder on device via
     - web UI
     - scp
     - ftp
