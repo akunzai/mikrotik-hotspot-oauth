@@ -1,6 +1,6 @@
 {
   "name": "hotspot-login-page",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@9.2.0",
@@ -14,7 +14,6 @@
     "lint:fix": "eslint --fix ./src/"
   },
   "dependencies": {
-    "jose": "^5.3.0",
     "keycloak-js": "24.0.4"
   },
   "devDependencies": {

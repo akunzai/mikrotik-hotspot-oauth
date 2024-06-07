@@ -1,15 +1,4 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
 import Keycloak from 'keycloak-js';
-
-async function verifyToken(keycloak) {
-  try {
-    const jwkSet = createRemoteJWKSet(new URL(`${keycloak.authServerUrl}/realms/${keycloak.realm}/protocol/openid-connect/certs`));
-    const { payload } = await jwtVerify(keycloak.token, jwkSet);
-    return payload;
-  } catch (e) {
-    throw new Error(`invalid token: ${e}`);
-  }
-}
 
 function updateInfo(message, hasError) {
   hasError = hasError ?? false;
@@ -27,7 +16,7 @@ async function main() {
     updateInfo('failed to initialize SSO, please check configuration', true);
     return;
   }
-  const claims = await verifyToken(keycloak);
+  const claims = keycloak.tokenParsed;
   const username = claims[claims.n];
   const password = claims[claims.np || 's'];
   if (!username || !password) {
