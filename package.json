@@ -1,6 +1,6 @@
 {
   "name": "hotspot-login-page",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.4.0",
