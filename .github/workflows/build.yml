@@ -22,9 +22,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Activate package manager
-        run: corepack enable
+        run: |
+          npm install -g corepack@latest
+          corepack enable
       - name: Install dependencies
         run: pnpm install
       - name: Lint
