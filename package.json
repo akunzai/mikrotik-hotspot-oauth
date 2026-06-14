@@ -14,7 +14,7 @@
     "lint:fix": "eslint --fix ./src/"
   },
   "dependencies": {
-    "keycloak-js": "26.1.2"
+    "keycloak-js": "26.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
